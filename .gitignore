@@ -1,0 +1,5 @@
+.vscode
+data/pascal/*
+.__pycache__/*
+__pycache__/*
+frcnn/__pycache__/*
