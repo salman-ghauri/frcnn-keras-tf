@@ -21,7 +21,7 @@ else:
     raise ValueError('Base network not registered!')
 
 file_parser = 'pascal_voc'
-C.base_net_weights = 'models/resnet50_weights_th_dim_ordering_th_kernels_notop.h5'
+C.base_net_weights = 'models/resnet50_weights_tf_dim_ordering_tf_kernels.h5'
 
 all_imgs, classes_count, class_mapping = pascal_parser.get_data("data/pascal")
 
@@ -76,7 +76,7 @@ try:
     print('loading weights from {}'.format(C.base_net_weights))
     model_rpn.load_weights(C.base_net_weights, by_name=True)
     model_classifier.load_weights(C.base_net_weights, by_name=True)
-
+    print("--->> Weights loaded successfully!!")
 except:
     print('Unable to load weights, please check this path: {}'.format(C.base_net_weights))
 
@@ -100,7 +100,7 @@ model_classifier.compile(
 )
 model_all.compile(optimizer='sgd', loss='mae')
 
-epoch_length = 1000
+epoch_length = 10
 num_epochs = 50
 iter_num = 0
 
@@ -218,7 +218,7 @@ for epoch_num in range(num_epochs):
                 rpn_accuracy_per_epoch = []
 
                 if C.verbose:
-                    print('Mean number of bounding boxes from RPN overlapping ground truth boxes: {}'.format(mean_overlapping_bboxes))
+                    print('Mean number of bounding boxes from RPN overlapping ground truth boxes: {}'.format(mean_overlapping_boxes))
                     print('Classifier accuracy for bounding boxes from RPN: {}'.format(class_acc))
                     print('Loss RPN classifier: {}'.format(loss_rpn_cls))
                     print('Loss RPN regression: {}'.format(loss_rpn_regr))
