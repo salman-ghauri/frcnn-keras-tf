@@ -85,10 +85,10 @@ def nn_base(input_tensor=None, trainable=False):
             img_input = input_tensor
 
     x = ZeroPadding2D((3, 3), name='conv1_pad')(img_input)
-    x = Conv2D(64, (7, 7), padding='valid', strides=(2, 2), name='conv1', trainable=trainable)(x)
+    x = Conv2D(64, (7, 7), strides=(2, 2), name='conv1', trainable=trainable)(x)
     x = FixedBatchNorm(axis=bn_axis, name='bn_conv1')(x)
     x = Activation('relu')(x)
-    x = ZeroPadding2D(padding=(1, 1), name='pool1_pad')(x)
+    # x = ZeroPadding2D(padding=(1, 1), name='pool1_pad')(x)
     x = MaxPool2D((3, 3), strides=(2, 2))(x)
 
     x = conv_block(x, 3, [64, 64, 256], stage=2, block='a', strides=(1, 1), trainable=trainable)
