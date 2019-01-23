@@ -137,7 +137,6 @@ for epoch_num in range(num_epochs):
             loss_rpn = model_rpn.train_on_batch(X, Y)
 
             P_rpn = model_rpn.predict_on_batch(X)
-            print(P_rpn[0].shape, P_rpn[1].shape)
 
             roi = roi_util.rpn_to_roi(P_rpn[0], P_rpn[1], C, use_regr=True, overlap_thresh=0.7, max_boxes=300)
 
@@ -192,10 +191,10 @@ for epoch_num in range(num_epochs):
             )
             all_losses[iter_num, 0] = loss_rpn[1]
             all_losses[iter_num, 1] = loss_rpn[2]
-
-            all_losses[iter_num, 2] = loss_classifier[1]
-            all_losses[iter_num, 3] = loss_classifier[2]
-            all_losses[iter_num, 4] = loss_classifier[3]
+            print(len(loss_classifier))
+            all_losses[iter_num, 2] = loss_classifier[0]
+            all_losses[iter_num, 3] = loss_classifier[1]
+            all_losses[iter_num, 4] = loss_classifier[2]
 
             iter_num += 1
 
