@@ -1,14 +1,13 @@
-import keras.backend as K
-from keras.optimizers import Adam, SGD
+from keras.optimizers import Adam
 from keras.layers import Input
 from keras.models import Model
 from keras.utils import generic_utils
-
 from frcnn import config, pascal_parser, roi_util, losses, data_generator
-
 import pickle, traceback
 import random, time
 import numpy as np
+import keras.backend as K
+
 
 C = config.Config()
 # get configuration settings from user, for now using default.
@@ -71,7 +70,6 @@ model_classifier = Model([img_input, roi_input], classifier)
 
 model_all = Model([img_input, roi_input], classifier + rpn[:2])
 
-# weight = '/home/salman-macpak/work/extra/keras_frcnn/models/resnet50_weights_th_dim_ordering_th_kernels_notop.h5'
 try:
     print('loading weights from {}'.format(C.base_net_weights))
     model_rpn.load_weights(C.base_net_weights, by_name=True)
@@ -81,6 +79,7 @@ except:
     print('Unable to load weights, please check this path: {}'.format(C.base_net_weights))
 
 optimizer = Adam(lr=1e-5)
+optimizer_classifier = Adam(lr=1e-5)
 model_rpn.compile(
     optimizer=optimizer,
     loss=[
@@ -89,7 +88,7 @@ model_rpn.compile(
     ]
 )
 model_classifier.compile(
-    optimizer=optimizer,
+    optimizer=optimizer_classifier,
     loss=[
         losses.class_loss_cls,
         losses.class_loss_regr(len(classes_count)-1)
@@ -194,9 +193,9 @@ for epoch_num in range(num_epochs):
             all_losses[iter_num, 0] = loss_rpn[1]
             all_losses[iter_num, 1] = loss_rpn[2]
 
-            all_losses[iter_num, 2] = loss_classifier[0]
-            all_losses[iter_num, 3] = loss_classifier[1]
-            all_losses[iter_num, 4] = loss_classifier[2]
+            all_losses[iter_num, 2] = loss_classifier[1]
+            all_losses[iter_num, 3] = loss_classifier[2]
+            all_losses[iter_num, 4] = loss_classifier[3]
 
             iter_num += 1
 

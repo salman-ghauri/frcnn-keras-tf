@@ -8,7 +8,7 @@ def get_data(input_path):
 	classes_count = {}
 	class_mapping = {}
 	visualise = False
-	data_paths = [os.path.join(input_path, s) for s in ['VOC2007']]  #VOC2012
+	data_paths = [os.path.join(input_path, s) for s in ['VOC2007', 'VOC2012']]
 	print('Parsing annotation files')
 
 	for data_path in data_paths:

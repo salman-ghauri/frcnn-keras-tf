@@ -3,3 +3,7 @@ data/pascal/*
 .__pycache__/*
 __pycache__/*
 frcnn/__pycache__/*
+models/model_frcnn.resnet.hdf5
+.ipynb_checkpoints/
+test_eval.ipynb
+eval.py
