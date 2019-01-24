@@ -52,8 +52,7 @@ print("Total training images: {}".format(len(train_imgs)))
 print("Total number of test images: {}".format(len(test_imgs)))
 
 data_gen_train = data_generator.get_anchor_gt(train_imgs, classes_count, C, base_network.get_img_output_length, mode='train')
-data_gen_val = data_generator.get_anchor_gt(test_imgs, classes_count, C, base_network.get_img_output_length, mode='val')
-
+# data_gen_val = data_generator.get_anchor_gt(test_imgs, classes_count, C, base_network.get_img_output_length, mode='val')
 input_img_shape = (None, None, 3)
 
 img_input = Input(shape=input_img_shape)

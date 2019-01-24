@@ -55,11 +55,9 @@ class SampleSelector:
 		self.curr_class = next(self.class_cycle)
 
 	def skip_sample_for_balanced_class(self, img_data):
-
 		class_in_img = False
 
 		for bbox in img_data['bboxes']:
-
 			cls_name = bbox['class']
 
 			if cls_name == self.curr_class:
@@ -241,7 +239,6 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, mode='train'):
 
 	sample_selector = SampleSelector(class_count)
-
 	while True:
 		if mode == 'train':
 			np.random.shuffle(all_img_data)
