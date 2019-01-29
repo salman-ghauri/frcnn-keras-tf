@@ -6,12 +6,21 @@ import time
 from frcnn import data_generator
 
 def calc_iou(R, img_data, C, class_mapping):
-
+	"""
+	calculates IOU between ROI proposal and GT boxes
+	Arguments:
+		R: generated ROIs
+		img_data: actual image data (GTs)
+	Returns:
+		X_ROI: transformed IOS (x1, y1, w, h)
+		Y_cls_num: class num from class mapping in one hot encoded form
+		Y2: predicted labels and classes for each box
+		IOUs: calculated IoUs for each box with GT
+	"""
 	bboxes = img_data['bboxes']
 	(width, height) = (img_data['width'], img_data['height'])
 	# get image dimensions for resizing
 	(resized_width, resized_height) = data_generator.get_new_img_size(width, height, C.im_size)
-
 	gta = np.zeros((len(bboxes), 4))
 
 	for bbox_num, bbox in enumerate(bboxes):
@@ -25,7 +34,7 @@ def calc_iou(R, img_data, C, class_mapping):
 	y_class_num = []
 	y_class_regr_coords = []
 	y_class_regr_label = []
-	IoUs = [] # for debugging only
+	IoUs = []
 
 	for ix in range(R.shape[0]):
 		(x1, y1, x2, y2) = R[ix, :]
@@ -91,7 +100,7 @@ def calc_iou(R, img_data, C, class_mapping):
 
 	X = np.array(x_roi)
 	Y1 = np.array(y_class_num)
-	Y2 = np.concatenate([np.array(y_class_regr_label),np.array(y_class_regr_coords)],axis=1)
+	Y2 = np.concatenate([np.array(y_class_regr_label), np.array( y_class_regr_coords)], axis=1)
 
 	return np.expand_dims(X, axis=0), np.expand_dims(Y1, axis=0), np.expand_dims(Y2, axis=0), IoUs
 
@@ -224,7 +233,14 @@ def non_max_suppression_fast(boxes, probs, overlap_thresh=0.9, max_boxes=300):
 
 
 def rpn_to_roi(rpn_layer, regr_layer, C, use_regr=True, max_boxes=300,overlap_thresh=0.9):
-
+	"""
+	Generates ROIs from RPN layer. Applies NMS to limit boxes to 300
+	Args:
+		rpn_layer: rpn classifier data from RPN
+		regr_layer: rpn regression data from RPN
+		C: configuration for model
+		max_boxes: number of ROI boxes to output
+	"""
 	regr_layer = regr_layer / C.std_scaling
 
 	anchor_sizes = C.anchor_scales
@@ -236,7 +252,7 @@ def rpn_to_roi(rpn_layer, regr_layer, C, use_regr=True, max_boxes=300,overlap_th
 
 	curr_layer = 0
 	A = np.zeros((4, rpn_layer.shape[1], rpn_layer.shape[2], rpn_layer.shape[3]))
-	
+
 	for anchor_size in anchor_sizes:
 		for anchor_ratio in anchor_ratios:
 
@@ -245,7 +261,7 @@ def rpn_to_roi(rpn_layer, regr_layer, C, use_regr=True, max_boxes=300,overlap_th
 			regr = regr_layer[0, :, :, 4 * curr_layer:4 * curr_layer + 4]
 			regr = np.transpose(regr, (2, 0, 1))
 
-			X, Y = np.meshgrid(np.arange(cols),np. arange(rows))
+			X, Y = np.meshgrid(np.arange(cols), np. arange(rows))
 
 			A[0, :, :, curr_layer] = X - anchor_x/2
 			A[1, :, :, curr_layer] = Y - anchor_y/2
@@ -267,7 +283,8 @@ def rpn_to_roi(rpn_layer, regr_layer, C, use_regr=True, max_boxes=300,overlap_th
 
 			curr_layer += 1
 
-	all_boxes = np.reshape(A.transpose((0, 3, 1,2)), (4, -1)).transpose((1, 0))
+	all_boxes = np.reshape(A.transpose((0, 3, 1, 2)), (4, -1)).transpose((1, 0))
+	
 	all_probs = rpn_layer.transpose((0, 3, 1, 2)).reshape((-1))
 
 	x1 = all_boxes[:, 0]

@@ -136,8 +136,8 @@ def classifier(base_layers, input_rois, num_rois, nb_classes=21, trainable=False
     out = classifier_layers(out_roi_pool, input_shape=input_shape, trainable=True)
 
     out = TimeDistributed(Flatten())(out)
-    out_class = TimeDistributed(Dense(nb_classes, activation='softmax', kernel_initializer='zero'), name='dense_classifier_{}'.format(nb_classes))(out)
-    out_reger = TimeDistributed(Dense((nb_classes - 1) * 4 , activation='linear', kernel_initializer='zero'), name='dense_regressor_'.format(nb_classes))(out)
+    out_class = TimeDistributed(Dense(nb_classes, activation='softmax', kernel_initializer='zero'), name='rcnn_classifier_{}'.format(nb_classes))(out)
+    out_reger = TimeDistributed(Dense((nb_classes - 1) * 4 , activation='linear', kernel_initializer='zero'), name='rcnn_regressor_{}'.format(nb_classes))(out)
 
     return [out_class, out_reger]
 

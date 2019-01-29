@@ -72,15 +72,16 @@ class SampleSelector:
 
 def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_length_calc_function):
 
+	"""
+	Region proposal network interface ->
+	"""
 	downscale = float(C.rpn_stride)
 	anchor_sizes = C.anchor_scales
 	anchor_ratios = C.anchor_ratios
 	num_anchors = len(anchor_sizes) * len(anchor_ratios)	
 
 	# calculate the output map size based on the network architecture
-
 	(output_width, output_height) = img_length_calc_function(resized_width, resized_height)
-
 	n_anchratios = len(anchor_ratios)
 	
 	# initialise empty output objectives
@@ -159,14 +160,14 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 							if curr_iou > best_iou_for_bbox[bbox_num]:
 								best_anchor_for_bbox[bbox_num] = [jy, ix, anchor_ratio_idx, anchor_size_idx]
 								best_iou_for_bbox[bbox_num] = curr_iou
-								best_x_for_bbox[bbox_num,:] = [x1_anc, x2_anc, y1_anc, y2_anc]
-								best_dx_for_bbox[bbox_num,:] = [tx, ty, tw, th]
+								best_x_for_bbox[bbox_num, :] = [x1_anc, x2_anc, y1_anc, y2_anc]
+								best_dx_for_bbox[bbox_num, :] = [tx, ty, tw, th]
 
 							# we set the anchor to positive if the IOU is >0.7 (it does not matter if there was another better box, it just indicates overlap)
 							if curr_iou > C.rpn_max_overlap:
 								bbox_type = 'pos'
 								num_anchors_for_bbox[bbox_num] += 1
-								# we update the regression layer target if this IOU is the best for the current (x,y) and anchor position
+								# we update the regression layer target if this IOU is the best for the current (x, y) and anchor position
 								if curr_iou > best_iou_for_loc:
 									best_iou_for_loc = curr_iou
 									best_regr = (tx, ty, tw, th)
@@ -193,7 +194,7 @@ def calc_rpn(C, img_data, width, height, resized_width, resized_height, img_leng
 	# we ensure that every bbox has at least one positive RPN region
 	for idx in range(num_anchors_for_bbox.shape[0]):
 		if num_anchors_for_bbox[idx] == 0:
-			# no box with an IOU greater than zero ...
+			# no box with an IOU greater than zero
 			if best_anchor_for_bbox[idx, 0] == -1:
 				continue
 			
@@ -274,10 +275,11 @@ def get_anchor_gt(all_img_data, class_count, C, img_length_calc_function, mode='
 					print(e)
 					continue
 
-				# Zero-center by mean pixel, and preprocess image
-
-				x_img = x_img[:, :, (2, 1, 0)]  # BGR -> RGB
+				# BGR -> RGB
+				x_img = x_img[:, :, (2, 1, 0)]
 				x_img = x_img.astype(np.float32)
+				
+				# Zero-center by mean pixel, and preprocess image
 				x_img[:, :, 0] -= C.img_channel_mean[0]
 				x_img[:, :, 1] -= C.img_channel_mean[1]
 				x_img[:, :, 2] -= C.img_channel_mean[2]
